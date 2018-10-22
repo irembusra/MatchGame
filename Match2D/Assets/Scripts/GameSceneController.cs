@@ -76,11 +76,53 @@ public class GameSceneController : MonoBehaviour {
                             "time",0.2f));
                     }else if (hitPiece.IsNeighbour(selectedPiece))
                     {
-                        //AttemptMatch(selectedPiece, hitPiece);
+                        AttemptMatch(selectedPiece, hitPiece);
                     }
                     selectedPiece = null;
                 }
             }
         }
     }
+
+    private void AttemptMatch(Piece piece1, Piece piece2)
+    {
+        StartCoroutine(AttemptMatchRoutine(piece1, piece2));
+    }
+
+    private IEnumerator AttemptMatchRoutine(Piece piece1,Piece piece2)
+    {
+        iTween.Stop(piece1.gameObject);
+        iTween.Stop(piece2.gameObject);
+
+        piece1.transform.localScale = Vector3.one * 2f;
+        piece2.transform.localScale = Vector3.one * 2f;
+
+        Vector2 coordinates1 = piece1.coordinates;
+        Vector2 coordinates2 = piece2.coordinates;
+
+        Vector3 position1 = piece1.transform.position;
+        Vector3 position2 = piece2.transform.position;
+
+        iTween.MoveTo(piece1.gameObject, iTween.Hash(
+            "position", position2,
+            "time", 0.5f
+            ));
+        iTween.MoveTo(piece2.gameObject, iTween.Hash(
+            "position", position1,
+            "time", 0.5f
+                
+            ));
+
+        piece1.coordinates = coordinates2;
+        piece2.coordinates = coordinates1;
+
+        board[(int)piece1.coordinates.x, (int)piece1.coordinates.y] = piece1;
+        board[(int)piece2.coordinates.x, (int)piece2.coordinates.y] = piece2;
+
+        yield return new WaitForSeconds(0.5f);
+
+
+    }
+
+
 }
